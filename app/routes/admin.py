@@ -83,6 +83,34 @@ def product_delete(product_id):
     return redirect(url_for("admin.products"))
 
 
+@bp.route("/messages")
+@admin_required
+def messages():
+    rows = get_db().execute(
+        "SELECT m.id, m.content, m.created_at, m.receiver_id, u.username AS sender "
+        "FROM messages m JOIN users u ON u.id = m.sender_id ORDER BY m.id DESC LIMIT 100"
+    ).fetchall()
+    return render_template("admin/messages.html", messages=rows)
+
+
+@bp.route("/messages/<int:message_id>/delete", methods=("POST",))
+@admin_required
+def message_delete(message_id):
+    get_db().execute("DELETE FROM messages WHERE id = ?", (message_id,))
+    return redirect(url_for("admin.messages"))
+
+
+@bp.route("/transfers")
+@admin_required
+def transfers():
+    rows = get_db().execute(
+        "SELECT t.id, t.amount, t.created_at, s.username AS sender, r.username AS receiver "
+        "FROM transfers t JOIN users s ON s.id = t.sender_id "
+        "JOIN users r ON r.id = t.receiver_id ORDER BY t.id DESC LIMIT 100"
+    ).fetchall()
+    return render_template("admin/transfers.html", transfers=rows)
+
+
 @bp.route("/reports")
 @admin_required
 def reports():
