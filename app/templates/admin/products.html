@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}상품 관리{% endblock %}
+{% block content %}
+<h1>상품 관리</h1>
+<table class="table">
+  <thead><tr><th>ID</th><th>상품명</th><th>가격</th><th>판매자</th><th>상태</th><th></th></tr></thead>
+  <tbody>
+  {% for p in products %}
+    <tr>
+      <td>{{ p['id'] }}</td>
+      <td><a href="{{ url_for('products.detail', product_id=p['id']) }}">{{ p['title'] }}</a></td>
+      <td>{{ "{:,}".format(p['price']) }}원</td>
+      <td>{{ p['seller'] }}</td>
+      <td>{% if p['status'] == 'active' %}판매중{% else %}차단됨{% endif %}</td>
+      <td class="actions-cell">
+        <form class="inline" method="post" action="{{ url_for('admin.product_status', product_id=p['id']) }}">
+          <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+          {% if p['status'] == 'active' %}
+            <input type="hidden" name="status" value="blocked">
+            <button type="submit" class="btn ghost">차단</button>
+          {% else %}
+            <input type="hidden" name="status" value="active">
+            <button type="submit" class="btn ghost">차단 해제</button>
+          {% endif %}
+        </form>
+        <form class="inline" method="post" action="{{ url_for('admin.product_delete', product_id=p['id']) }}"
+              onsubmit="return confirm('상품을 삭제할까요?')">
+          <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+          <button type="submit" class="btn danger">삭제</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

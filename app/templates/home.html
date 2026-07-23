@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <h1>중고나라 미니</h1>
+  <p>동네에서 사고팔고, 채팅하고, 송금까지. 작은 중고거래 플랫폼입니다.</p>
+  <div class="actions">
+    <a class="btn" href="{{ url_for('products.index') }}">상품 구경하기</a>
+    {% if not g.user %}<a class="btn ghost" href="{{ url_for('auth.register') }}">가입하기</a>{% endif %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}상품 등록{% endblock %}
+{% block content %}
+<h1>상품 등록</h1>
+<form method="post" enctype="multipart/form-data" class="card form">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <label>상품명 (100자 이내)
+    <input name="title" required maxlength="100">
+  </label>
+  <label>가격 (원)
+    <input name="price" type="number" min="0" max="100000000" required>
+  </label>
+  <label>상품 설명 (2000자 이내)
+    <textarea name="description" rows="6" maxlength="2000"></textarea>
+  </label>
+  <label>사진 (png/jpg/jpeg/gif/webp, 2MB 이하)
+    <input type="file" name="image" accept=".png,.jpg,.jpeg,.gif,.webp">
+  </label>
+  <button type="submit" class="btn">등록</button>
+</form>
+{% endblock %}

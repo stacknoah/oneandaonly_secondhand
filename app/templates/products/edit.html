@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}상품 수정{% endblock %}
+{% block content %}
+<h1>상품 수정</h1>
+<form method="post" enctype="multipart/form-data" class="card form">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <label>상품명
+    <input name="title" required maxlength="100" value="{{ product['title'] }}">
+  </label>
+  <label>가격 (원)
+    <input name="price" type="number" min="0" max="100000000" required value="{{ product['price'] }}">
+  </label>
+  <label>상품 설명
+    <textarea name="description" rows="6" maxlength="2000">{{ product['description'] }}</textarea>
+  </label>
+  <label>사진 교체 (선택)
+    <input type="file" name="image" accept=".png,.jpg,.jpeg,.gif,.webp">
+  </label>
+  <button type="submit" class="btn">저장</button>
+</form>
+{% endblock %}

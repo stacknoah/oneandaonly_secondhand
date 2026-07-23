@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}{{ peer['username'] }}님과 채팅{% endblock %}
+{% block content %}
+<h1>{{ peer['username'] }}님과 채팅</h1>
+<div class="chat-box full">
+  <div id="chat-log">
+    {% for m in history %}
+      <div class="msg {% if m['sender_id'] == g.user['id'] %}me{% endif %}">
+        <span class="who">{{ m['username'] }}</span> {{ m['content'] }}
+      </div>
+    {% endfor %}
+  </div>
+  <form id="chat-form">
+    <input id="chat-input" autocomplete="off" maxlength="500" placeholder="메시지 입력">
+    <button type="submit" class="btn">전송</button>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script>
+  const peerId = {{ peer['id'] | tojson }};
+  const socket = io();
+  const log = document.getElementById("chat-log");
+  socket.emit("join_dm", { peer_id: peerId });
+  socket.on("dm_message", (m) => {
+    const div = document.createElement("div");
+    div.className = "msg" + (m.sender_id === {{ g.user['id'] | tojson }} ? " me" : "");
+    const who = document.createElement("span");
+    who.className = "who";
+    who.textContent = m.username;
+    div.appendChild(who);
+    div.appendChild(document.createTextNode(" " + m.content));
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+  });
+  document.getElementById("chat-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const input = document.getElementById("chat-input");
+    const content = input.value.trim();
+    if (!content) return;
+    socket.emit("dm_message", { peer_id: peerId, content });
+    input.value = "";
+  });
+  log.scrollTop = log.scrollHeight;
+</script>
+{% endblock %}

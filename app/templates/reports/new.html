@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}신고하기{% endblock %}
+{% block content %}
+<h1>신고하기</h1>
+<div class="card">
+  <p>신고 대상: {% if target_type == 'product' %}상품{% else %}사용자{% endif %} "{{ target['label'] }}"</p>
+</div>
+<form method="post" class="card form">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <label>신고 사유 (10~500자)
+    <textarea name="reason" rows="5" required minlength="10" maxlength="500"
+              placeholder="어떤 문제가 있는지 구체적으로 작성해 주세요."></textarea>
+  </label>
+  <button type="submit" class="btn danger">신고 접수</button>
+</form>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}전체 상품{% endblock %}
+{% block content %}
+<div class="split">
+  <section class="grow">
+    <h1>전체 상품</h1>
+    <form method="get" class="search">
+      <input name="q" value="{{ q }}" placeholder="상품명 검색" maxlength="100">
+      <button type="submit" class="btn">검색</button>
+    </form>
+    <ul class="plain-list">
+      {% for p in products %}
+        <li><a href="{{ url_for('products.detail', product_id=p['id']) }}">{{ p['title'] }}</a></li>
+      {% else %}
+        <li class="muted">{% if q %}검색 결과가 없습니다.{% else %}등록된 상품이 없습니다.{% endif %}</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <aside class="chat-box">
+    <h2>전체 채팅</h2>
+    {% if g.user %}
+      <div id="chat-log">
+        {% for m in history %}
+          <div class="msg"><span class="who">{{ m['username'] }}</span> {{ m['content'] }}</div>
+        {% endfor %}
+      </div>
+      <form id="chat-form">
+        <input id="chat-input" autocomplete="off" maxlength="500" placeholder="메시지 입력">
+        <button type="submit" class="btn">전송</button>
+      </form>
+    {% else %}
+      <p class="muted">채팅은 로그인 후 이용할 수 있습니다.</p>
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if g.user %}
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script>
+  const socket = io();
+  const log = document.getElementById("chat-log");
+  socket.emit("join_lobby");
+  socket.on("lobby_message", (m) => {
+    // textContent로만 렌더링해서 채팅 통한 XSS 차단
+    const div = document.createElement("div");
+    div.className = "msg";
+    const who = document.createElement("span");
+    who.className = "who";
+    who.textContent = m.username;
+    div.appendChild(who);
+    div.appendChild(document.createTextNode(" " + m.content));
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+  });
+  document.getElementById("chat-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const input = document.getElementById("chat-input");
+    const content = input.value.trim();
+    if (!content) return;
+    socket.emit("lobby_message", { content });
+    input.value = "";
+  });
+  log.scrollTop = log.scrollHeight;
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}지갑{% endblock %}
+{% block content %}
+<h1>지갑</h1>
+<div class="card">
+  <p class="price">잔액: {{ "{:,}".format(balance) }}원</p>
+</div>
+
+<h2>송금하기</h2>
+<form method="post" action="{{ url_for('wallet.transfer') }}" class="card form">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <label>받는 사람 아이디
+    <input name="receiver" required maxlength="20">
+  </label>
+  <label>금액 (원)
+    <input name="amount" type="number" min="1" max="10000000" required>
+  </label>
+  <button type="submit" class="btn">송금</button>
+</form>
+
+<h2>거래 내역</h2>
+<table class="table">
+  <thead><tr><th>구분</th><th>상대</th><th>금액</th><th>일시</th></tr></thead>
+  <tbody>
+  {% for t in history %}
+    <tr>
+      {% if t['sender_id'] == g.user['id'] %}
+        <td>보냄</td><td>{{ t['receiver'] }}</td><td>-{{ "{:,}".format(t['amount']) }}원</td>
+      {% else %}
+        <td>받음</td><td>{{ t['sender'] }}</td><td>+{{ "{:,}".format(t['amount']) }}원</td>
+      {% endif %}
+      <td>{{ t['created_at'] }}</td>
+    </tr>
+  {% else %}
+    <tr><td colspan="4" class="muted">거래 내역이 없습니다.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

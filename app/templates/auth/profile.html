@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ user['username'] }} 프로필{% endblock %}
+{% block content %}
+<h1>{{ user['username'] }}</h1>
+<div class="card">
+  <p>{{ user['bio'] or '소개글이 없습니다.' }}</p>
+  <p class="muted">가입일: {{ user['created_at'] }}{% if user['status'] != 'active' %} · 휴면 계정{% endif %}</p>
+</div>
+{% if g.user['id'] != user['id'] %}
+<div class="actions">
+  <a class="btn" href="{{ url_for('chat.dm', peer_id=user['id']) }}">1:1 채팅</a>
+  <a class="btn ghost" href="{{ url_for('reports.new', type='user', id=user['id']) }}">신고</a>
+</div>
+{% endif %}
+<h2>판매 중인 상품</h2>
+<ul class="plain-list">
+  {% for p in products %}
+    <li><a href="{{ url_for('products.detail', product_id=p['id']) }}">{{ p['title'] }}</a></li>
+  {% else %}
+    <li class="muted">판매 중인 상품이 없습니다.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

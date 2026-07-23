@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}1:1 채팅{% endblock %}
+{% block content %}
+<h1>1:1 채팅</h1>
+<ul class="plain-list">
+  {% for p in partners %}
+    <li><a href="{{ url_for('chat.dm', peer_id=p['id']) }}">{{ p['username'] }}</a></li>
+  {% else %}
+    <li class="muted">대화 내역이 없습니다. 상품 상세나 프로필에서 채팅을 시작해 보세요.</li>
+  {% endfor %}
+</ul>
+{% endblock %}
